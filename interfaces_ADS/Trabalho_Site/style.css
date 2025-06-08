@@ -4,7 +4,7 @@
     box-sizing: border-box;
 }
 
-body, html {
+html, body {
     height: 100%;
     font-family: 'Montserrat', sans-serif;
     background-color: #f4f4f4;
@@ -14,16 +14,15 @@ body, html {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background-color: #6c806f
+    background-color: #6c806f;
 }
 
 header {
-    padding: 30px 10px;
-    background: #063d0f;
-    text-align: center;
-    font-size: 1em;
+    background-color: #063d0f;
     color: whitesmoke;
-    padding: 10px;
+    text-align: center;
+    padding: 30px 10px 10px;
+    font-size: 1em;
 }
 
 header h1 {
@@ -32,8 +31,6 @@ header h1 {
 
 nav ul {
     list-style: none;
-    padding: 0;
-    margin: 0;
     display: flex;
     justify-content: center;
     gap: 50px;
@@ -55,12 +52,14 @@ main {
 }
 
 section {
+    width: 900px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
     padding: 30px 10px;
 }
+
 
 .card {
     background-color: whitesmoke;
@@ -70,6 +69,7 @@ section {
     border-radius: 20px;
     font-size: 14px;
     text-align: justify;
+    transition: transform 0.2s ease-in-out;
 }
 
 .card:hover {
@@ -103,7 +103,7 @@ footer {
 }
 
 .img_home img {
-    width: 1200px;
+    width: 100%;
     border: 3px solid #063d0f;
     border-radius: 20px;
 }
@@ -115,20 +115,26 @@ footer {
     text-align: justify;
 }
 
-.temporadas {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+main.corpo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
 }
 
-.temporadas h2 {
+main.corpo h2 {
     text-align: center;
-    margin: 30px;
+    margin-bottom: 30px;
+    color: #063d0f;
+    font-size: 28px;
 }
 
-.grade {    
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+.grade {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
+    justify-content: center;
 }
 
 .grade .card {
@@ -144,4 +150,86 @@ footer {
 
 .grade .card p {
     text-align: justify;
+}
+
+.form-contato {
+    width: 80%;
+    background-color: whitesmoke;
+    padding: 20px;
+    border-radius: 15px;
+    border: 3px solid #063d0f;
+    box-sizing: border-box;
+}
+
+.form-contato label {
+    font-weight: bold;
+    color: #063d0f;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-contato input,
+.form-contato textarea {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 15px;
+    border: 2px solid #063d0f;
+    border-radius: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+.form-contato button {
+    background-color: #063d0f;
+    color: whitesmoke;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.form-contato button:hover {
+    background-color: #0a5c11;
+}
+
+.card a {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    height: 100%;
+}
+
+.card a:hover {
+    text-decoration: underline;
+}
+
+.video-trailer {
+    margin: 30px 0 0 0;
+}
+
+.nav-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+}
+
+.btn {
+    width: 200px;
+    text-align: center;
+    display: inline-block;
+    background-color: #063d0f;
+    color: whitesmoke;
+    padding: 12px 25px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #0a5c11;
 }
