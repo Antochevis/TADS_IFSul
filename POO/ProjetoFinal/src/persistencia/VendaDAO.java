@@ -1,152 +1,164 @@
 package persistencia;
 
-import conexao.ConexaoMySQL;
-import model.*;
+import model.Cliente;
+import model.ClientePessoaFisica;
+import model.ClientePessoaJuridica;
+import model.Venda;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class VendaDAO {
 
-    /* === CREATE === */
-    public void salvar(Venda venda) throws SQLException {
-        String sql = """
-            INSERT INTO venda (data, valor_total, forma_pagamento, cliente_id)
-            VALUES (?,?,?,?)
-        """;
+    private ConexaoMysql conexao;
 
-        try (Connection c = ConexaoMySQL.getConexao();
-             PreparedStatement ps =
-                     c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+    public VendaDAO() {
+        this.conexao = new ConexaoMysql("localhost", "3306", "root", "root", "projetofinal");
+    }
 
-            ps.setDate  (1, Date.valueOf(venda.getData()));
-            ps.setDouble(2, venda.getValorTotal());
-            ps.setString(3, venda.getFormaPagamento());
-            ps.setInt   (4, venda.getCliente().getId());
+    // SALVAR
+    public void salvar(Venda venda) {
+        this.conexao.abrirConexao();
+        String sql = "INSERT INTO venda (cliente_id, data, valor_total, forma_pagamento) VALUES (?, ?, ?, ?)";
 
+        try {
+            PreparedStatement ps = conexao.getConexao().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, venda.getCliente().getId());
+            ps.setDate(2, Date.valueOf(venda.getData()));
+            ps.setDouble(3, venda.getValorTotal());
+            ps.setString(4, venda.getFormaPagamento());
             ps.executeUpdate();
 
-            try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) venda.setId(rs.getInt(1));
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                venda.setId(rs.getInt(1));
             }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            conexao.fecharConexao();
         }
     }
 
-    /* === READ — listar todas as vendas === */
-    public List<Venda> listarTodos() throws SQLException {
-        String sql = """
-            SELECT v.*, c.*
-            FROM venda v
-            JOIN cliente c ON v.cliente_id = c.id
-        """;
+    // ATUALIZAR
+    public void atualizar(Venda venda) {
+        this.conexao.abrirConexao();
+        String sql = "UPDATE venda SET data=?, valor_total=?, forma_pagamento=?, cliente_id=? WHERE id=?";
 
+        try {
+            PreparedStatement ps = conexao.getConexao().prepareStatement(sql);
+            ps.setDate(1, Date.valueOf(venda.getData()));
+            ps.setDouble(2, venda.getValorTotal());
+            ps.setString(3, venda.getFormaPagamento());
+            ps.setInt(4, venda.getCliente().getId());
+            ps.setInt(5, venda.getId());
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            conexao.fecharConexao();
+        }
+    }
+
+    // EXCLUIR
+    public void excluir(int id) {
+        this.conexao.abrirConexao();
+        String sql = "DELETE FROM venda WHERE id=?";
+
+        try {
+            PreparedStatement ps = conexao.getConexao().prepareStatement(sql);
+            ps.setInt(1, id);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            conexao.fecharConexao();
+        }
+    }
+
+    // BUSCAR POR ID
+    public Venda buscarPorId(int id) {
+        Venda venda = null;
+        this.conexao.abrirConexao();
+        String sql = "SELECT * FROM venda v JOIN cliente c ON v.cliente_id = c.id WHERE v.id = ?";
+
+        try {
+            PreparedStatement ps = conexao.getConexao().prepareStatement(sql);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                venda = map(rs);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            conexao.fecharConexao();
+        }
+
+        return venda;
+    }
+
+    // BUSCAR TODOS
+    public List<Venda> buscarTodos() {
         List<Venda> lista = new ArrayList<>();
+        this.conexao.abrirConexao();
+        String sql = "SELECT * FROM venda v JOIN cliente c ON v.cliente_id = c.id";
 
-        try (Connection c = ConexaoMySQL.getConexao();
-             PreparedStatement ps = c.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try {
+            PreparedStatement ps = conexao.getConexao().prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                Cliente cli = mapCliente(rs);
-                Venda   ven = mapVenda(rs, cli);
-                lista.add(ven);
+                lista.add(map(rs));
             }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            conexao.fecharConexao();
         }
+
         return lista;
     }
 
-    /* === READ — buscar 1 venda por ID === */
-    public Venda buscarPorId(int id) throws SQLException {
-        String sql = """
-            SELECT v.*, c.*
-            FROM venda v
-            JOIN cliente c ON v.cliente_id = c.id
-            WHERE v.id = ?
-        """;
-
-        try (Connection c = ConexaoMySQL.getConexao();
-             PreparedStatement ps = c.prepareStatement(sql)) {
-
-            ps.setInt(1, id);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    Cliente cli = mapCliente(rs);
-                    return mapVenda(rs, cli);
-                }
-            }
-        }
-        return null;
-    }
-
-    /* === UPDATE === */
-    public void atualizar(Venda venda) throws SQLException {
-        String sql = """
-            UPDATE venda
-            SET data = ?, valor_total = ?, forma_pagamento = ?, cliente_id = ?
-            WHERE id = ?
-        """;
-
-        try (Connection c = ConexaoMySQL.getConexao();
-             PreparedStatement ps = c.prepareStatement(sql)) {
-
-            ps.setDate  (1, Date.valueOf(venda.getData()));
-            ps.setDouble(2, venda.getValorTotal());
-            ps.setString(3, venda.getFormaPagamento());
-            ps.setInt   (4, venda.getCliente().getId());
-            ps.setInt   (5, venda.getId());
-            ps.executeUpdate();
-        }
-    }
-
-    /* === DELETE === */
-    public void excluir(int id) throws SQLException {
-        try (Connection c = ConexaoMySQL.getConexao();
-             PreparedStatement ps =
-                     c.prepareStatement("DELETE FROM venda WHERE id = ?")) {
-            ps.setInt(1, id);
-            ps.executeUpdate();
-        }
-    }
-
-    /* ------------------------------------------------------------------ */
-    /* ------------------- MÉTODOS AUXILIARES PRIVADOS ------------------ */
-    /* ------------------------------------------------------------------ */
-
-    /** Constrói o objeto Cliente correto (PF ou PJ) a partir do ResultSet */
-    private Cliente mapCliente(ResultSet rs) throws SQLException {
+    // MAP
+    private Venda map(ResultSet rs) throws SQLException {
+        Cliente cliente;
         String tipo = rs.getString("tipo_cliente");
-        Cliente cli;
 
         if ("PF".equals(tipo)) {
-            cli = new ClientePessoaFisica(
-                    rs.getString("nome"),
-                    rs.getString("cpf"),
-                    rs.getString("endereco"),
-                    rs.getString("cidade"),
-                    rs.getString("estado"),
-                    rs.getString("telefone"));
-        } else {                                    // PJ
-            cli = new ClientePessoaJuridica(
-                    rs.getString("razao_social"),
-                    rs.getString("cnpj"),
-                    rs.getString("endereco"),
-                    rs.getString("cidade"),
-                    rs.getString("estado"),
-                    rs.getString("telefone"));
+            cliente = new ClientePessoaFisica(
+                rs.getString("nome"),
+                rs.getString("cpf"),
+                rs.getString("endereco"),
+                rs.getString("cidade"),
+                rs.getString("estado"),
+                rs.getString("telefone"));
+        } else {
+            cliente = new ClientePessoaJuridica(
+                rs.getString("razao_social"),
+                rs.getString("cnpj"),
+                rs.getString("endereco"),
+                rs.getString("cidade"),
+                rs.getString("estado"),
+                rs.getString("telefone"));
         }
-        cli.setId(rs.getInt("cliente_id"));
-        return cli;
-    }
 
-    /** Constrói o objeto Venda usando as colunas do ResultSet */
-    private Venda mapVenda(ResultSet rs, Cliente cli) throws SQLException {
-        return new Venda(
-                rs.getInt("id"),
-                rs.getDate("data").toLocalDate(),
-                rs.getDouble("valor_total"),
-                rs.getString("forma_pagamento"),
-                cli
-        );
+        cliente.setId(rs.getInt("cliente_id"));
+
+        Venda venda = new Venda();
+        venda.setId(rs.getInt("id"));
+        venda.setData(rs.getDate("data").toLocalDate());
+        venda.setValorTotal(rs.getDouble("valor_total"));
+        venda.setFormaPagamento(rs.getString("forma_pagamento"));
+        venda.setCliente(cliente);
+
+        return venda;
     }
 }

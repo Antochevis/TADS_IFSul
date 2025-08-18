@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Empréstimo Consignado</title>
+</head>
+
+<body>
+    <h2>Empréstimo Consignado</h2>
+    <script>
+        // Solicita os dados do usuário
+        let nome = prompt("Digite seu nome:");
+        let valor = parseFloat(prompt("Digite o valor do empréstimo:"));
+        let parcelas = parseInt(prompt("Digite o número de parcelas:"));
+
+        // Verifica se os dados são válidos
+        if (nome !== null && nome.trim() !== "" && !isNaN(valor) && valor > 0 && !isNaN(parcelas) && parcelas > 0) {
+            let taxa = 0.10; // 10% ao mês
+            let totalJuros = valor * taxa * parcelas;
+            let totalAPagar = valor + totalJuros;
+            let valorParcela = totalAPagar / parcelas;
+
+            // Mostra os resultados
+            document.write("<h3>Resumo do Empréstimo</h3>");
+            document.write("Nome do Cliente: " + nome + "<br>");
+            document.write("Valor do Empréstimo: R$ " + valor.toFixed(2) + "<br>");
+            document.write("Número de Parcelas: " + parcelas + "<br>");
+            document.write("Taxa de Juros: " + (taxa * 100) + "% ao mês<br>");
+            document.write("Valor de cada Parcela: R$ " + valorParcela.toFixed(2) + "<br>");
+            document.write("Total de Juros: R$ " + totalJuros.toFixed(2) + "<br>");
+            document.write("Total a Pagar: R$ " + totalAPagar.toFixed(2) + "<br>");
+
+        } else {
+            document.write("Dados inválidos. Atualize a página e tente novamente.");
+        }
+    </script>
+</body>
+
+</html>

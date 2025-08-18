@@ -1,6 +1,5 @@
 package persistencia;
 
-import conexao.ConexaoMySQL;
 import model.ItemVenda;
 import model.Produto;
 import model.Venda;
@@ -11,82 +10,97 @@ import java.util.List;
 
 public class ItemVendaDAO {
 
-    /* === CREATE === */
-    public void salvar(ItemVenda item) throws SQLException {
-        String sql = """
-            INSERT INTO item_venda
-                (venda_id, produto_id, quantidade, preco_unitario)
-            VALUES (?,?,?,?)
-        """;
+    private ConexaoMysql conexao;
 
-        try (Connection c = ConexaoMySQL.getConexao();
-             PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+    public ItemVendaDAO() {
+        this.conexao = new ConexaoMysql("localhost", "3306", "root", "root", "projetofinal");
+    }
 
-            ps.setInt   (1, item.getVenda().getId());
-            ps.setInt   (2, item.getProduto().getId());
-            ps.setInt   (3, item.getQuantidade());
+    // SALVAR
+    public void salvar(ItemVenda item) {
+        this.conexao.abrirConexao();
+        String sql = "INSERT INTO item_venda VALUES (null, ?, ?, ?, ?)";
+
+        try {
+            PreparedStatement ps = conexao.getConexao().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, item.getVenda().getId());
+            ps.setInt(2, item.getProduto().getId());
+            ps.setInt(3, item.getQuantidade());
             ps.setDouble(4, item.getPrecoUnitario());
-
             ps.executeUpdate();
 
-            try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) {
-                    item.setId(rs.getInt(1));
-                }
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                item.setId(rs.getInt(1));
             }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            conexao.fecharConexao();
         }
     }
 
-    /* === READ – listar itens de uma venda === */
-    public List<ItemVenda> listarPorVenda(int idVenda) throws SQLException {
-        List<ItemVenda> itens = new ArrayList<>();
+    // EXCLUIR POR VENDA
+    public void excluirPorVenda(int idVenda) {
+        this.conexao.abrirConexao();
+        String sql = "DELETE FROM item_venda WHERE venda_id=?";
 
-        String sql = """
-            SELECT iv.*, p.nome, p.tipo
-            FROM item_venda iv
-            JOIN produto p ON iv.produto_id = p.id
-            WHERE iv.venda_id = ?
-        """;
-
-        try (Connection c = ConexaoMySQL.getConexao();
-             PreparedStatement ps = c.prepareStatement(sql)) {
-
-            ps.setInt(1, idVenda);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    // Monta objetos “placeholder” de Venda e Produto
-                    Venda   venda   = new Venda();
-                    venda.setId(idVenda);
-
-                    Produto produto = new Produto();
-                    produto.setId(rs.getInt("produto_id"));
-                    produto.setNome(rs.getString("nome"));
-                    produto.setTipo(rs.getString("tipo"));
-
-                    ItemVenda item = new ItemVenda(
-                        rs.getInt("id"),
-                        venda,
-                        produto,
-                        rs.getInt("quantidade"),
-                        rs.getDouble("preco_unitario")
-                    );
-                    itens.add(item);
-                }
-            }
-        }
-        return itens;
-    }
-
-    /* === DELETE – remove todos os itens de uma venda (útil para rollback/atualização) === */
-    public void excluirPorVenda(int idVenda) throws SQLException {
-        String sql = "DELETE FROM item_venda WHERE venda_id = ?";
-
-        try (Connection c = ConexaoMySQL.getConexao();
-             PreparedStatement ps = c.prepareStatement(sql)) {
-
+        try {
+            PreparedStatement ps = conexao.getConexao().prepareStatement(sql);
             ps.setInt(1, idVenda);
             ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            conexao.fecharConexao();
         }
+    }
+
+    // BUSCAR
+    public List<ItemVenda> buscarPorVenda(int idVenda) {
+        List<ItemVenda> lista = new ArrayList<>();
+        this.conexao.abrirConexao();
+        String sql = "SELECT iv.*, p.nome, p.tipo, p.preco, p.estoque FROM item_venda iv JOIN produto p ON iv.produto_id = p.id WHERE iv.venda_id = ?";
+
+        try {
+            PreparedStatement ps = conexao.getConexao().prepareStatement(sql);
+            ps.setInt(1, idVenda);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                lista.add(map(rs, idVenda));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            conexao.fecharConexao();
+        }
+
+        return lista;
+    }
+
+    // MAP
+    private ItemVenda map(ResultSet rs, int idVenda) throws SQLException {
+        Produto produto = new Produto();
+        produto.setId(rs.getInt("produto_id"));
+        produto.setNome(rs.getString("nome"));
+        produto.setTipo(rs.getString("tipo"));
+        produto.setPreco(rs.getDouble("preco"));
+        produto.setEstoque(rs.getInt("estoque"));
+
+        Venda venda = new Venda();
+        venda.setId(idVenda);
+
+        ItemVenda item = new ItemVenda();
+        item.setId(rs.getInt("id"));
+        item.setVenda(venda);
+        item.setProduto(produto);
+        item.setQuantidade(rs.getInt("quantidade"));
+        item.setPrecoUnitario(rs.getDouble("preco_unitario"));
+
+        return item;
     }
 }

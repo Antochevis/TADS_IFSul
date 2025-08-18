@@ -1,15 +1,7 @@
 package apresentacao;
 
-import model.Cliente;
-import model.ClientePessoaFisica;
-import model.ClientePessoaJuridica;
-import model.ItemVenda;
-import model.Produto;
-import model.Venda;
-import persistencia.ClienteDAO;
-import persistencia.ItemVendaDAO;
-import persistencia.ProdutoDAO;
-import persistencia.VendaDAO;
+import model.*;
+import persistencia.*;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -30,9 +22,8 @@ public class Apresentacao {
             System.out.println("\n=== Menu Principal ===");
             System.out.println("1 - Gerenciar Produtos");
             System.out.println("2 - Gerenciar Clientes");
-            System.out.println("3 - Registrar Venda");
-            System.out.println("4 - Listar Vendas");
-            System.out.println("5 - Sair");
+            System.out.println("3 - Gerenciar Vendas");
+            System.out.println("4 - Sair");
             System.out.print("Escolha uma opção: ");
 
             String opcao = sc.nextLine();
@@ -41,9 +32,8 @@ public class Apresentacao {
                 switch (opcao) {
                     case "1" -> gerenciarProdutos();
                     case "2" -> gerenciarClientes();
-                    case "3" -> registrarVenda();
-                    case "4" -> listarVendas();
-                    case "5" -> {
+                    case "3" -> gerenciarVendas();
+                    case "4" -> {
                         System.out.println("Saindo...");
                         sc.close();
                         System.exit(0);
@@ -69,7 +59,7 @@ public class Apresentacao {
             String op = sc.nextLine();
             switch (op) {
                 case "1" -> {
-                    List<Produto> produtos = produtoDAO.listarTodos();
+                    List<Produto> produtos = produtoDAO.buscarTodos();
                     System.out.println("\n=== Produtos ===");
                     for (Produto p : produtos) {
                         System.out.printf("ID: %d | Tipo: %s | Nome: %s | Preço: %.2f | Estoque: %d%n",
@@ -123,7 +113,9 @@ public class Apresentacao {
                     produtoDAO.excluir(id);
                     System.out.println("Produto excluído.");
                 }
-                case "5" -> { return; }
+                case "5" -> {
+                    return;
+                }
                 default -> System.out.println("Opção inválida!");
             }
         }
@@ -142,7 +134,7 @@ public class Apresentacao {
             String op = sc.nextLine();
             switch (op) {
                 case "1" -> {
-                    List<Cliente> clientes = clienteDAO.listarTodos();
+                    List<Cliente> clientes = clienteDAO.buscarTodos();
                     System.out.println("\n=== Clientes ===");
                     for (Cliente c : clientes) {
                         if (c instanceof ClientePessoaFisica pf) {
@@ -157,7 +149,7 @@ public class Apresentacao {
                     }
                 }
                 case "2" -> {
-                    System.out.println("Escolha o tipo de cliente:");
+                    System.out.println("\nEscolha o tipo de cliente:");
                     System.out.println("1 - Pessoa Física");
                     System.out.println("2 - Pessoa Jurídica");
                     System.out.print("Opção: ");
@@ -247,7 +239,7 @@ public class Apresentacao {
                     String telefone = sc.nextLine();
                     if (!telefone.isBlank()) c.setTelefone(telefone);
 
-                    clienteDAO.atualizar(c);
+                    clienteDAO.editar(c);
                     System.out.println("Cliente atualizado.");
                 }
                 case "4" -> {
@@ -256,7 +248,33 @@ public class Apresentacao {
                     clienteDAO.excluir(id);
                     System.out.println("Cliente excluído.");
                 }
-                case "5" -> { return; }
+                case "5" -> {
+                    return;
+                }
+                default -> System.out.println("Opção inválida!");
+            }
+        }
+    }
+
+    private static void gerenciarVendas() throws SQLException {
+        while (true) {
+            System.out.println("\n--- Gerenciar Vendas ---");
+            System.out.println("1 - Listar Vendas");
+            System.out.println("2 - Inserir Venda");
+            System.out.println("3 - Atualizar Venda");
+            System.out.println("4 - Excluir Venda");
+            System.out.println("5 - Voltar");
+            System.out.print("Opção: ");
+            String op = sc.nextLine();
+
+            switch (op) {
+            	case "1" -> listarVendas();
+                case "2" -> registrarVenda();
+                case "3" -> atualizarVenda();
+                case "4" -> excluirVenda();
+                case "5" -> {
+                    return;
+                }
                 default -> System.out.println("Opção inválida!");
             }
         }
@@ -265,24 +283,18 @@ public class Apresentacao {
     private static void registrarVenda() throws SQLException {
         System.out.println("\n--- Registrar Venda ---");
 
-        // Escolher cliente
-        List<Cliente> clientes = clienteDAO.listarTodos();
+        List<Cliente> clientes = clienteDAO.buscarTodos();
         if (clientes.isEmpty()) {
             System.out.println("Nenhum cliente cadastrado. Cadastre um cliente antes.");
             return;
         }
-        System.out.println("Clientes disponíveis:");
+
         for (Cliente c : clientes) {
-            String nomeCliente;
-            if (c instanceof ClientePessoaFisica pf) {
-                nomeCliente = pf.getNome();
-            } else if (c instanceof ClientePessoaJuridica pj) {
-                nomeCliente = pj.getRazaoSocial();
-            } else {
-                nomeCliente = "Cliente";
-            }
-            System.out.printf("%d - %s%n", c.getId(), nomeCliente);
+            String nome = (c instanceof ClientePessoaFisica pf) ? pf.getNome() :
+                          (c instanceof ClientePessoaJuridica pj) ? pj.getRazaoSocial() : "Cliente";
+            System.out.printf("%d - %s%n", c.getId(), nome);
         }
+
         System.out.print("Digite o ID do cliente: ");
         int idCliente = Integer.parseInt(sc.nextLine());
         Cliente cliente = clienteDAO.buscarPorId(idCliente);
@@ -294,21 +306,21 @@ public class Apresentacao {
         Venda venda = new Venda(LocalDate.now(), 0, "", cliente);
         vendaDAO.salvar(venda);
 
-        double totalVenda = 0;
+        double total = 0;
 
-        // Adicionar produtos à venda
         while (true) {
-            List<Produto> produtos = produtoDAO.listarTodos();
+            List<Produto> produtos = produtoDAO.buscarTodos();
             if (produtos.isEmpty()) {
-                System.out.println("Nenhum produto cadastrado. Cadastre produtos antes.");
+                System.out.println("Nenhum produto cadastrado.");
                 break;
             }
-            System.out.println("Produtos disponíveis:");
+
             for (Produto p : produtos) {
-                System.out.printf("%d - %s | %s | Preço: %.2f | Estoque: %d%n",
-                        p.getId(), p.getNome(), p.getTipo(), p.getPreco(), p.getEstoque());
+                System.out.printf("%d - %s | Estoque: %d | Preço: %.2f%n",
+                        p.getId(), p.getNome(), p.getEstoque(), p.getPreco());
             }
-            System.out.print("Digite o ID do produto para adicionar (ou 0 para finalizar): ");
+
+            System.out.print("Digite o ID do produto (0 para encerrar): ");
             int idProduto = Integer.parseInt(sc.nextLine());
             if (idProduto == 0) break;
 
@@ -319,56 +331,101 @@ public class Apresentacao {
             }
 
             System.out.print("Quantidade: ");
-            int quantidade = Integer.parseInt(sc.nextLine());
+            int qtd = Integer.parseInt(sc.nextLine());
 
-            if (quantidade > produto.getEstoque()) {
+            if (qtd > produto.getEstoque()) {
                 System.out.println("Estoque insuficiente.");
                 continue;
             }
 
-            ItemVenda item = new ItemVenda(venda, produto, quantidade, produto.getPreco());
+            ItemVenda item = new ItemVenda(venda, produto, qtd, produto.getPreco());
             itemVendaDAO.salvar(item);
 
-            // Atualizar estoque do produto
-            produto.setEstoque(produto.getEstoque() - quantidade);
+            produto.setEstoque(produto.getEstoque() - qtd);
             produtoDAO.atualizar(produto);
 
-            totalVenda += quantidade * produto.getPreco();
-            System.out.println("Item adicionado.");
+            total += qtd * produto.getPreco();
         }
 
-        venda.setValorTotal(totalVenda);
-        venda.setFormaPagamento("Não especificado"); // Pode adicionar opção para definir
+        venda.setValorTotal(total);
+        System.out.print("Forma de pagamento: ");
+        venda.setFormaPagamento(sc.nextLine());
         vendaDAO.atualizar(venda);
 
-        System.out.println("Venda registrada com sucesso! Total: " + totalVenda);
+        System.out.println("Venda registrada. Total: " + total);
     }
 
     private static void listarVendas() throws SQLException {
-        List<Venda> vendas = vendaDAO.listarTodos();
+        List<Venda> vendas = vendaDAO.buscarTodos();
         if (vendas.isEmpty()) {
             System.out.println("Nenhuma venda registrada.");
             return;
         }
-        System.out.println("\n=== Vendas ===");
+
         for (Venda v : vendas) {
-            String nomeCliente;
-            if (v.getCliente() instanceof ClientePessoaFisica pf) {
-                nomeCliente = pf.getNome();
-            } else if (v.getCliente() instanceof ClientePessoaJuridica pj) {
-                nomeCliente = pj.getRazaoSocial();
-            } else {
-                nomeCliente = "Cliente";
-            }
+            String nome = (v.getCliente() instanceof ClientePessoaFisica pf) ? pf.getNome() :
+                          (v.getCliente() instanceof ClientePessoaJuridica pj) ? pj.getRazaoSocial() : "Cliente";
 
             System.out.printf("ID: %d | Cliente: %s | Data: %s | Total: %.2f | Pagamento: %s%n",
-                    v.getId(), nomeCliente, v.getData(), v.getValorTotal(), v.getFormaPagamento());
+                    v.getId(), nome, v.getData(), v.getValorTotal(), v.getFormaPagamento());
 
-            List<ItemVenda> itens = itemVendaDAO.listarPorVenda(v.getId());
+            List<ItemVenda> itens = itemVendaDAO.buscarPorVenda(v.getId());
             for (ItemVenda iv : itens) {
-                System.out.printf("   - Produto: %s | Qtde: %d | Preço unit: %.2f%n",
+                System.out.printf("   - Produto: %s | Qtde: %d | Preço: %.2f%n",
                         iv.getProduto().getNome(), iv.getQuantidade(), iv.getPrecoUnitario());
             }
         }
+    }
+
+    private static void atualizarVenda() throws SQLException {
+        System.out.print("ID da venda: ");
+        int id = Integer.parseInt(sc.nextLine());
+
+        Venda venda = vendaDAO.buscarPorId(id);
+        if (venda == null) {
+            System.out.println("Venda não encontrada.");
+            return;
+        }
+
+        System.out.print("ID do novo cliente: ");
+        int clienteId = Integer.parseInt(sc.nextLine());
+        Cliente cliente = clienteDAO.buscarPorId(clienteId);
+        if (cliente == null) {
+            System.out.println("Cliente não encontrado.");
+            return;
+        }
+        venda.setCliente(cliente);
+
+        System.out.print("Nova data (AAAA-MM-DD): ");
+        String dataStr = sc.nextLine();
+        LocalDate data = LocalDate.parse(dataStr);
+        venda.setData(data);
+
+        System.out.print("Novo valor total: ");
+        double valor = Double.parseDouble(sc.nextLine());
+        venda.setValorTotal(valor);
+
+        System.out.print("Nova forma de pagamento: ");
+        String forma = sc.nextLine();
+        venda.setFormaPagamento(forma);
+
+        vendaDAO.atualizar(venda);
+        System.out.println("Venda atualizada.");
+    }
+
+    private static void excluirVenda() throws SQLException {
+        System.out.print("ID da venda a excluir: ");
+        int id = Integer.parseInt(sc.nextLine());
+
+        List<ItemVenda> itens = itemVendaDAO.buscarPorVenda(id);
+        for (ItemVenda iv : itens) {
+            Produto p = iv.getProduto();
+            p.setEstoque(p.getEstoque() + iv.getQuantidade());
+            produtoDAO.atualizar(p);
+        }
+
+        itemVendaDAO.excluirPorVenda(id);
+        vendaDAO.excluir(id);
+        System.out.println("Venda excluída.");
     }
 }

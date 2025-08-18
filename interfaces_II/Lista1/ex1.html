@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Saudação Personalizada</title>
+</head>
+
+<body>
+    <h2>Saudação Personalizada</h2>
+    <script>
+        // Pede o nome
+        let nome = prompt("Digite seu nome:");
+
+        // Verifica se foi preenchido
+        if (nome !== null && nome.trim() !== "") {
+            document.write("<h3>Olá, " + nome + "! Seja bem-vindo(a)!</h3>");
+            alert("Olá, " + nome + "! Seja bem-vindo(a)!");
+        } else {
+            document.write("O nome é obrigatório. Atualize a página e tente novamente.");
+        }
+    </script>
+</body>
+
+</html>

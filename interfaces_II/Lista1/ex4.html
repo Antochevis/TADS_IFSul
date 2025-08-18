@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tabuada com WHILE</title>
+</head>
+
+<body>
+    <h2>Tabuada com WHILE</h2>
+    <script>
+        // Solicita ao usuário um número
+        let numero = parseInt(prompt("Digite um número para ver sua tabuada:"));
+
+        // Verifica se é número válido
+        if (!isNaN(numero)) {
+            document.write("<h3>Tabuada do " + numero + ":</h3>");
+
+            let i = 1;
+            while (i <= 10) {
+                let resultado = numero * i;
+                document.write(numero + " x " + i + " = " + resultado + "<br>");
+                i++;
+            }
+        } else {
+            document.write("Valor inválido. Atualize a página e digite um número.");
+        }
+    </script>
+</body>
+
+</html>

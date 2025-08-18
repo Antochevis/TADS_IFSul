@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Números Pares com FOR</title>
+</head>
+
+<body>
+    <h2>Números Pares com FOR</h2>
+    <script>
+        // Solicita ao usuário um número
+        let N = parseInt(prompt("Digite um número:"));
+
+        // Verifica se é número válido
+        if (!isNaN(N)) {
+            let contador = 0;
+            document.write("<p>Números pares de 0 até " + N + ":</p>");
+
+            // Loop de 0 até N
+            for (let i = 0; i <= N; i++) {
+                if (i % 2 === 0) {
+                    document.write(i + "<br>");
+                    contador++;
+                }
+            }
+
+            // Mostra a quantidade encontrada
+            alert("Foram encontrados " + contador + " números pares.");
+        } else {
+            document.write("Valor inválido. Atualize a página e digite um número.");
+        }
+    </script>
+</body>
+
+</html>

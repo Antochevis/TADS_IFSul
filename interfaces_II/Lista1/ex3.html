@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Contagem Regressiva</title>
+</head>
+
+<body>
+    <h2>Contagem Regressiva</h2>
+    <script>
+        // Solicita ao usuário um número
+        let numero = parseInt(prompt("Digite um número para iniciar a contagem regressiva:"));
+
+        // Verifica se é válido
+        if (!isNaN(numero) && numero >= 0) {
+            document.write("<p>Contagem regressiva a partir de " + numero + ":</p>");
+
+            // While para fazer a contagem até 0
+            while (numero >= 0) {
+                document.write(numero + "<br>");
+                numero--;
+            }
+
+            // Mensagem final
+            alert("Fim da contagem!");
+        } else {
+            document.write("Valor inválido. Atualize a página e digite um número válido.");
+        }
+    </script>
+</body>
+
+</html>

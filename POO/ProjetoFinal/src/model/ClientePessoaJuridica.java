@@ -1,41 +1,46 @@
 package model;
 
 public class ClientePessoaJuridica extends Cliente {
-    private String razaoSocial;
-    private String cnpj;
+	
+	private String razaoSocial;
+	private String cnpj;
 
-    public ClientePessoaJuridica() {
-        super();
-    }
+	public ClientePessoaJuridica() {
+		super();
+		this.razaoSocial = "";
+		this.cnpj = "";
+	}
 
-    public ClientePessoaJuridica(String razaoSocial, String cnpj, String endereco,
-                                 String cidade, String estado, String telefone) {
-        super(endereco, cidade, estado, telefone);
-        this.razaoSocial = razaoSocial;
-        this.cnpj = cnpj;
-    }
-    
-    @Override
-    public String getDocumento()   { return cnpj; }
+	public ClientePessoaJuridica(String razaoSocial, String cnpj, String endereco, String cidade, String estado,
+			String telefone) {
+		super(endereco, cidade, estado, telefone);
+		this.razaoSocial = razaoSocial;
+		this.cnpj = cnpj;
+	}
 
-    @Override
-    public String getTipoCliente() { return "PJ"; }
+	@Override
+	public String getDocumento() {
+		return cnpj;
+	}
 
-    // getters e setters
+	@Override
+	public String getTipoCliente() {
+		return "PJ";
+	}
 
-    public String getRazaoSocial() {
-        return razaoSocial;
-    }
+	public String getRazaoSocial() {
+		return razaoSocial;
+	}
 
-    public void setRazaoSocial(String razaoSocial) {
-        this.razaoSocial = razaoSocial;
-    }
+	public void setRazaoSocial(String razaoSocial) {
+		this.razaoSocial = razaoSocial;
+	}
 
-    public String getCnpj() {
-        return cnpj;
-    }
+	public String getCnpj() {
+		return cnpj;
+	}
 
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
-    }
+	public void setCnpj(String cnpj) {
+		this.cnpj = cnpj;
+	}
 }

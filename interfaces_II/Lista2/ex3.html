@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Loja de Smartphones</title>
+</head>
+
+<body>
+    <h2>Loja de Smartphones</h2>
+
+    <form id="lojaForm">
+        <label for="nome">Nome do Cliente:</label><br>
+        <input type="text" id="nome" required><br><br>
+
+        <label for="celular">Escolha o smartphone:</label><br>
+        <select id="celular" required>
+            <option value="" disabled selected>Selecione...</option>
+            <option value="0">iPhone 14 - Alta performance - R$ 7.000,00</option>
+            <option value="1">Samsung Galaxy S23 - Tela grande e câmera avançada - R$ 5.500,00</option>
+            <option value="2">Xiaomi 13 - Bom custo-benefício - R$ 4.200,00</option>
+        </select><br><br>
+
+        <label for="pagamento">Forma de pagamento:</label><br>
+        <select id="pagamento" required>
+            <option value="" disabled selected>Selecione...</option>
+            <option value="pix">PIX (5% de desconto)</option>
+            <option value="debito">Cartão de Débito</option>
+            <option value="boleto">Boleto em 6 parcelas</option>
+        </select><br><br>
+
+        <button type="button" onclick="finalizarCompra()">Finalizar Compra</button>
+    </form>
+
+    <div id="resultado"></div>
+
+    <script>
+        // Array com os modelos de smartphones e seus preços
+        const celulares = [
+            { nome: "iPhone 14", descricao: "Alta performance", preco: 7000 },
+            { nome: "Samsung Galaxy S23", descricao: "Tela grande e câmera avançada", preco: 5500 },
+            { nome: "Xiaomi 13", descricao: "Bom custo-benefício", preco: 4200 }
+        ];
+
+        function finalizarCompra() {
+            const nomeCliente = document.getElementById("nome").value.trim();
+            const celularIndex = document.getElementById("celular").value;
+            const formaPagamento = document.getElementById("pagamento").value;
+            const resultadoDiv = document.getElementById("resultado");
+
+            if (nomeCliente === "" || celularIndex === "" || formaPagamento === "") {
+                alert("Por favor, preencha todos os campos.");
+                return;
+            }
+
+            const celularEscolhido = celulares[celularIndex];
+            let total = celularEscolhido.preco;
+            let detalhesPagamento = "";
+
+            if (formaPagamento === "pix") {
+                const desconto = total * 0.05;
+                total -= desconto;
+                detalhesPagamento = `Pagamento via PIX com 5% de desconto: R$ ${desconto.toFixed(2)}`;
+            } else if (formaPagamento === "boleto") {
+                const parcela = total / 6;
+                detalhesPagamento = `Pagamento em 6 parcelas de R$ ${parcela.toFixed(2)}`;
+            } else {
+                detalhesPagamento = "Pagamento via Cartão de Débito sem desconto.";
+            }
+
+            resultadoDiv.innerHTML = `
+        <h3>Resumo da Compra</h3>
+        Nome do Cliente: ${nomeCliente}<br>
+        Produto comprado: ${celularEscolhido.nome} - ${celularEscolhido.descricao}<br>
+        Forma de pagamento: ${formaPagamento}<br>
+        ${detalhesPagamento}<br>
+        Total a pagar: R$ ${total.toFixed(2)}
+    `;
+        }
+    </script>
+</body>
+
+</html>
