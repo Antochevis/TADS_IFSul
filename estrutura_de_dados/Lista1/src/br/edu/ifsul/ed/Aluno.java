@@ -20,5 +20,4 @@ public class Aluno {
 		Aluno outro = (Aluno)o;
 		return this.nome.equals(outro.nome);
 	}
-
 }

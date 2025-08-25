@@ -22,6 +22,21 @@ public class TestePegaPorPosicao {
 		
 		System.out.println(aluno1);
 		System.out.println(aluno2);
+		
+		
+		// 1. posição ocupada
+        Aluno alunoValido = lista.pega(0);
+        System.out.println("Posição 0 (ocupada): " + alunoValido);
+
+        // 2. posição vazia
+        Aluno alunoVazio = lista.pega(5);
+        System.out.println("Posição 5 (vazia): " + alunoVazio);
+
+        // 3. posição que não existe
+        Aluno alunoInvalido = lista.pega(1000000); 
+        System.out.println("Posição inválida: " + alunoInvalido);
+		
+		
 	}
 
 }
