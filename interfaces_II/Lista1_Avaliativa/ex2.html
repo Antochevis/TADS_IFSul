@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercício 2</title>
+</head>
+
+<body>
+    <div id="saida"></div>
+    <script>
+        function Aluno(nome, curso, nota) {
+            this.nome = nome;
+            this.curso = curso;
+            this.nota = nota
+            this.aprovacao = function () {
+                if (nota >= 6) {
+                    return "Olá, " + this.nome + ", estudante do curso " + this.curso + ". Sua nota foi " + this.nota + " e você está aprovado!";
+                } else {
+                    return "Olá, " + this.nome + ", estudante do curso " + this.curso + ". Sua nota foi " + this.nota + " e você está reprovado.";
+                }
+            }
+        }
+        const aluno1 = new Aluno("João", "ADS", 6);
+        const aluno2 = new Aluno("Ana", "ADS", 5.9);
+        document.getElementById("saida").innerHTML = aluno1.aprovacao() + "<br>";
+        document.getElementById("saida").innerHTML += aluno2.aprovacao();
+    </script>
+</body>
+
+</html>

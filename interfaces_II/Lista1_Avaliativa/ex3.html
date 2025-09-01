@@ -1,0 +1,31 @@
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercício 3</title>
+</head>
+
+<body>
+    <div id="conteudo"></div>
+    <script>
+        const contaBancaria = new Object();
+        contaBancaria.titular = "João";
+        contaBancaria.saldo = 5000;
+
+        contaBancaria.depositar = function (valor) {
+            this.saldo += valor;
+        };
+        contaBancaria.sacar = function (valor) {
+            this.saldo -= valor;
+        };
+
+        document.getElementById("conteudo").innerHTML += "Cliente: " + contaBancaria.titular + ", saldo inicial: " + contaBancaria.saldo + "<br>";
+        contaBancaria.depositar(1000);
+        document.getElementById("conteudo").innerHTML += "Cliente: " + contaBancaria.titular + ", saldo após depositar  1000: " + contaBancaria.saldo + "<br>";
+        contaBancaria.sacar(500);
+        document.getElementById("conteudo").innerHTML += "Cliente: " + contaBancaria.titular + ", saldo após sacar  500: " + contaBancaria.saldo + "<br>";
+    </script>
+</body>
+
+</html>

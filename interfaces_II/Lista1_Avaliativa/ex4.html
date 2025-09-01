@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercício 4</title>
+</head>
+
+<body>
+    <div id="saida"></div>
+    <script>
+        class Produto {
+            constructor(nome, preco, desconto) {
+                this.nome = nome;
+                this.preco = preco;
+                this.desconto = desconto;
+            }
+            calculaPreco() {
+                let precoComDesconto = this.preco - (this.preco * (this.desconto / 100));
+                return "Preço do produto com desconto: " + precoComDesconto + " reais.";
+            }
+        }
+        const tenis = new Produto("Air Force 1", 800.00, 10);
+        document.getElementById("saida").innerHTML = tenis.calculaPreco();
+    </script>
+</body>
+
+</html>

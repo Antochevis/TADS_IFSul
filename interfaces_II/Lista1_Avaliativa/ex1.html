@@ -1,0 +1,23 @@
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercício 1</title>
+</head>
+
+<body>
+    <div id="conteudo"></div>
+    <script>
+        const carro = new Object();
+        carro.marca = "Chevrolet";
+        carro.modelo = "Montana";
+        carro.ano = 2013;
+        carro.descricao = function () {
+            return "Marca: " + carro.marca + "<br>Modelo: " + carro.modelo + "<br>Ano: " + carro.ano;
+        }
+        document.getElementById("conteudo").innerHTML = carro.descricao()
+    </script>
+</body>
+
+</html>
