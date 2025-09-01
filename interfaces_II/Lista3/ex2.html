@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Exercício 2</title>
+</head>
+
+<body>
+    <p id="formulario">Este é um formulário simples.</p>
+    <label>Nome: <input type="text" id="nome"></label><br><br>
+    <label>E-mail: <input type="email" id="email"></label><br><br>
+    <button onclick="mostrarDados()">Mostrar Dados</button>
+    <p id="saida"></p>
+
+    <script>
+        function mostrarDados() {
+            let nome = document.getElementById("nome").value;
+            let email = document.getElementById("email").value;
+            document.getElementById("saida").innerText = "Nome: " + nome + ". E-mail: " + email + ".";
+        }
+    </script>
+</body>
+
+</html>

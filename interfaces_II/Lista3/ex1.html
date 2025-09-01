@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Exercício 1</title>
+</head>
+
+<body>
+    <button onclick="mostrarData()">Mostrar Data e Hora</button>
+    <p id="info"></p>
+    <script>
+        let data = new Date();
+        function mostrarData() {
+            document.getElementById("info").innerHTML = data.toLocaleString();
+        }
+    </script>
+</body>
+
+</html>
