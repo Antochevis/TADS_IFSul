@@ -12,7 +12,8 @@ public class Teste {
         String criptografada = Criptografia.criptografar(mensagem);
         System.out.println("Mensagem criptografada: " + criptografada);
 
-        System.out.println("Mensagem descriptografada: " + mensagem);
+        String descriptografada = Criptografia.criptografar(criptografada);
+        System.out.println("Mensagem descriptografada: " + descriptografada);
 
         scanner.close();
     }
