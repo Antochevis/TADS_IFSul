@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Catálogo de Filmes</title>
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Roboto', sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        header {
+            background: rgb(190, 102, 102);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        .filtro {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .filtro input {
+            padding: 8px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 200px;
+        }
+
+        .filtro button {
+            padding: 8px 12px;
+            font-size: 1rem;
+            cursor: pointer;
+            background: rgb(190, 102, 102);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-left: 8px;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            align-content: flex-start;
+            gap: 20px;
+        }
+
+        .card {
+            width: 250px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .titulo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: rgb(190, 102, 102);
+            margin-bottom: 10px;
+        }
+
+        .genero,
+        .ano {
+            font-size: 0.9rem;
+            color: #555;
+            margin: 4px 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            margin-top: auto;
+            background: rgb(190, 102, 102);
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Catálogo de Filmes</h1>
+    </header>
+    <div class="filtro">
+        <input type="number" id="anoInput" placeholder="Digite o ano do filme">
+        <button id="filtrarBtn">Filtrar</button>
+    </div>
+    <main id="lista"></main>
+    <footer>
+        &copy; 2025 - API de Filmes | Maurício Prof
+    </footer>
+    <script>
+        async function listarFilmes() {
+            let resposta = await fetch("https://api-filmes-production-9408.up.railway.app/filmes");
+            let filmes = await resposta.json();
+            let lista = document.getElementById("lista");
+
+            function mostrar(filmesParaMostrar) {
+                lista.innerHTML = "";
+                if (filmesParaMostrar.length === 0) {
+                    lista.innerHTML = "<p>Não há filmes lançados no ano informado.</p>";
+                    return;
+                }
+                filmesParaMostrar.forEach(filme => {
+                    let card = document.createElement("div");
+                    card.className = "card";
+                    card.innerHTML = `<div class="titulo">${filme.titulo}</div>
+                    <div class="ano">Ano: ${filme.ano}</div>
+                    <div class="genero">Gênero: ${filme.genero}</div>
+                `;
+                    lista.appendChild(card);
+                });
+            }
+
+            mostrar(filmes);
+
+            document.getElementById("filtrarBtn").addEventListener("click", () => {
+                let ano = document.getElementById("anoInput").value;
+                if (ano) {
+                    let filtrados = filmes.filter(f => f.ano == ano);
+                    mostrar(filtrados);
+                } else {
+                    mostrar(filmes);
+                }
+            });
+        }
+        listarFilmes();
+    </script>
+</body>
+
+</html>
